@@ -20,7 +20,7 @@ class ApoioCreate(BaseModel):
     contato_embaixador: str | None = Field(default=None, max_length=40)
     mensagem: str | None = Field(default=None, max_length=500)
     confirmou_piloto: bool
-    confirmou_independencia: bool
+    confirmou_independencia: bool = True
 
     @field_validator(
         "nome",
@@ -57,9 +57,6 @@ class ApoioCreate(BaseModel):
 
         if not self.confirmou_piloto:
             raise ValueError("É necessário confirmar o apoio ao projeto-piloto.")
-
-        if not self.confirmou_independencia:
-            raise ValueError("É necessário confirmar a independência do movimento.")
 
         return self
 

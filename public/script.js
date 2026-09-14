@@ -129,7 +129,7 @@ const buildSupportPayload = () => {
     contato_embaixador: selected.includes("embaixador") ? contact : null,
     mensagem: formData.get("mensagem") || null,
     confirmou_piloto: formData.get("confirmo") === "on",
-    confirmou_independencia: formData.get("independente") === "on",
+    confirmou_independencia: true,
   };
 };
 
