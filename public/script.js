@@ -15,6 +15,7 @@ const ambassadorContactField = document.querySelector(".ambassador-contact-field
 const supportContactInput = document.querySelector('input[name="contato_apoio"]');
 const pilotContactInput = document.querySelector('input[name="contato_piloto"]');
 const ambassadorContactInput = document.querySelector('input[name="contato_embaixador"]');
+const phoneInputs = [supportContactInput, pilotContactInput, ambassadorContactInput].filter(Boolean);
 const formStatus = document.querySelector(".form-status");
 const revealGroups = [
   [document.querySelector(".problem-stats"), document.querySelector(".problem-quote")],
@@ -49,6 +50,19 @@ window.addEventListener(
 
 const getSelectedParticipation = () =>
   participationInputs.filter((input) => input.checked).map((input) => input.value);
+
+const formatPhoneNumber = (value) => {
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+
+  if (digits.length <= 2) return digits.length ? `(${digits}` : "";
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+};
+
+const applyPhoneMask = (input) => {
+  input.value = formatPhoneNumber(input.value);
+};
 
 const setFieldVisibility = (field, input, isVisible) => {
   field?.classList.toggle("is-hidden", !isVisible);
@@ -151,6 +165,12 @@ participationInputs.forEach((input) => {
     syncConditionalFields();
     setFormStatus("");
   });
+});
+
+phoneInputs.forEach((input) => {
+  input.maxLength = 15;
+  input.addEventListener("input", () => applyPhoneMask(input));
+  input.addEventListener("blur", () => applyPhoneMask(input));
 });
 
 syncConditionalFields();
