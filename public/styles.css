@@ -334,6 +334,13 @@ h1 strong {
   height: auto;
   filter: drop-shadow(0 26px 60px rgba(0, 0, 0, 0.6));
   transform: rotate(0.5deg);
+  opacity: 1;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.home-phone-image.is-switching {
+  opacity: 0;
+  transform: translateY(8px) rotate(0.5deg);
 }
 
 .phone {

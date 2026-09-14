@@ -18,7 +18,7 @@ class ApoioCreate(BaseModel):
     contato_apoio: str | None = Field(default=None, max_length=40)
     contato_piloto: str | None = Field(default=None, max_length=40)
     contato_embaixador: str | None = Field(default=None, max_length=40)
-    mensagem: str | None = Field(default=None, max_length=500)
+    mensagem: str = Field(min_length=2, max_length=500)
     confirmou_piloto: bool
     confirmou_independencia: bool = True
 

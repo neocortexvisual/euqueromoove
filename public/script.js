@@ -3,6 +3,7 @@ const nav = document.querySelector(".main-nav");
 const heroBg = document.querySelector(".hero-bg");
 const API_BASE_URL =
   window.MOOVE_API_BASE_URL || (window.location.protocol === "file:" ? "http://127.0.0.1:8002/api" : "/api");
+const phoneCarousel = document.querySelector("[data-phone-carousel]");
 const publicRelatoText = document.querySelector("[data-public-relato-text]");
 const publicRelatoAuthor = document.querySelector("[data-public-relato-author]");
 const supportForm = document.querySelector(".support-form");
@@ -22,6 +23,12 @@ const revealGroups = [
 ];
 const animatedCards = revealGroups.flat().filter(Boolean);
 let publicRelatoIndex = 0;
+let phoneCarouselIndex = 0;
+const phoneCarouselImages = [
+  "assets/phone-1.png",
+  "assets/phone-2.png",
+  "assets/phone-3.png",
+];
 
 toggle?.addEventListener("click", () => {
   const isOpen = nav.classList.toggle("open");
@@ -46,6 +53,20 @@ window.addEventListener(
 
 const getSelectedParticipation = () =>
   participationInputs.filter((input) => input.checked).map((input) => input.value);
+
+const startPhoneCarousel = () => {
+  if (!phoneCarousel) return;
+
+  window.setInterval(() => {
+    phoneCarousel.classList.add("is-switching");
+
+    window.setTimeout(() => {
+      phoneCarouselIndex = (phoneCarouselIndex + 1) % phoneCarouselImages.length;
+      phoneCarousel.src = phoneCarouselImages[phoneCarouselIndex];
+      phoneCarousel.classList.remove("is-switching");
+    }, 450);
+  }, 3600);
+};
 
 const formatPhoneNumber = (value) => {
   const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -127,7 +148,7 @@ const buildSupportPayload = () => {
     contato_apoio: selected.includes("apoiar") ? contact : null,
     contato_piloto: selected.includes("piloto") ? contact : null,
     contato_embaixador: selected.includes("embaixador") ? contact : null,
-    mensagem: formData.get("mensagem") || null,
+    mensagem: formData.get("mensagem"),
     confirmou_piloto: formData.get("confirmo") === "on",
     confirmou_independencia: true,
   };
@@ -166,6 +187,7 @@ phoneInputs.forEach((input) => {
 });
 
 syncConditionalFields();
+startPhoneCarousel();
 loadPublicRelatos();
 
 supportForm?.addEventListener("submit", async (event) => {
