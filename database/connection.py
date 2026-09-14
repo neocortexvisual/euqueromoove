@@ -16,6 +16,11 @@ def get_database_url() -> str:
     database_url = os.getenv("DATABASE_URL")
     if not database_url:
         raise RuntimeError("DATABASE_URL is required to connect to PostgreSQL.")
+
+    database_url = database_url.strip().strip('"').strip("'")
+    if database_url.startswith("DATABASE_URL="):
+        database_url = database_url.removeprefix("DATABASE_URL=").strip()
+
     return database_url
 
 
