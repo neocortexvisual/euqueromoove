@@ -9,13 +9,9 @@ const supportForm = document.querySelector(".support-form");
 const messageField = document.querySelector(".message-field textarea");
 const charCount = document.querySelector(".char-count");
 const participationInputs = [...document.querySelectorAll('input[name="participacao"]')];
-const supportContactField = document.querySelector(".support-contact-field");
-const pilotContactField = document.querySelector(".pilot-contact-field");
-const ambassadorContactField = document.querySelector(".ambassador-contact-field");
-const supportContactInput = document.querySelector('input[name="contato_apoio"]');
-const pilotContactInput = document.querySelector('input[name="contato_piloto"]');
-const ambassadorContactInput = document.querySelector('input[name="contato_embaixador"]');
-const phoneInputs = [supportContactInput, pilotContactInput, ambassadorContactInput].filter(Boolean);
+const contactField = document.querySelector(".contact-field");
+const contactInput = document.querySelector('input[name="contato"]');
+const phoneInputs = [contactInput].filter(Boolean);
 const formStatus = document.querySelector(".form-status");
 const revealGroups = [
   [document.querySelector(".problem-stats"), document.querySelector(".problem-quote")],
@@ -77,13 +73,7 @@ const setFieldVisibility = (field, input, isVisible) => {
 
 const syncConditionalFields = () => {
   const selected = getSelectedParticipation();
-  setFieldVisibility(supportContactField, supportContactInput, selected.includes("apoiar"));
-  setFieldVisibility(pilotContactField, pilotContactInput, selected.includes("piloto"));
-  setFieldVisibility(
-    ambassadorContactField,
-    ambassadorContactInput,
-    selected.includes("embaixador")
-  );
+  setFieldVisibility(contactField, contactInput, selected.length > 0);
 };
 
 const setFormStatus = (message, type = "neutral") => {
@@ -124,6 +114,8 @@ const loadPublicRelatos = async () => {
 
 const buildSupportPayload = () => {
   const formData = new FormData(supportForm);
+  const selected = getSelectedParticipation();
+  const contact = formData.get("contato") || null;
 
   return {
     nome: formData.get("nome"),
@@ -131,10 +123,10 @@ const buildSupportPayload = () => {
     bairro: formData.get("bairro"),
     turno: formData.get("turno"),
     faixa_etaria: formData.get("faixa_etaria"),
-    participacao: getSelectedParticipation(),
-    contato_apoio: formData.get("contato_apoio") || null,
-    contato_piloto: formData.get("contato_piloto") || null,
-    contato_embaixador: formData.get("contato_embaixador") || null,
+    participacao: selected,
+    contato_apoio: selected.includes("apoiar") ? contact : null,
+    contato_piloto: selected.includes("piloto") ? contact : null,
+    contato_embaixador: selected.includes("embaixador") ? contact : null,
     mensagem: formData.get("mensagem") || null,
     confirmou_piloto: formData.get("confirmo") === "on",
     confirmou_independencia: formData.get("independente") === "on",
