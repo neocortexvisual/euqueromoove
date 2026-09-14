@@ -8,6 +8,7 @@ from api.schemas import (
     ApoioAdminStats,
     ApoioCreate,
     ApoioRecord,
+    PublicRelato,
 )
 from database.connection import get_connection
 
@@ -31,10 +32,11 @@ def create_apoio(payload: ApoioCreate) -> ApoioRecord:
                 contato_piloto,
                 contato_embaixador,
                 mensagem,
+                relato_aprovado,
                 confirmou_piloto,
                 confirmou_independencia,
                 created_at
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s, %s, %s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s, %s, %s, FALSE, %s, %s, %s)
             """,
             (
                 apoio_id,
@@ -75,6 +77,7 @@ def list_apoios(limit: int = 200) -> ApoioAdminList:
                 contato_piloto,
                 contato_embaixador,
                 mensagem,
+                relato_aprovado,
                 confirmou_piloto,
                 confirmou_independencia,
                 created_at
@@ -93,14 +96,15 @@ def list_apoios(limit: int = 200) -> ApoioAdminList:
             bairro=row[3],
             turno=row[4],
             faixa_etaria=row[5],
-            participacao=row[6],
+            participacao=json.loads(row[6]) if isinstance(row[6], str) else row[6],
             contato_apoio=row[7],
             contato_piloto=row[8],
             contato_embaixador=row[9],
             mensagem=row[10],
-            confirmou_piloto=row[11],
-            confirmou_independencia=row[12],
-            created_at=row[13],
+            relato_aprovado=row[11],
+            confirmou_piloto=row[12],
+            confirmou_independencia=row[13],
+            created_at=row[14],
         )
         for row in rows
     ]
@@ -111,6 +115,85 @@ def list_apoios(limit: int = 200) -> ApoioAdminList:
         piloto=sum("piloto" in apoio.participacao for apoio in apoios),
         embaixador=sum("embaixador" in apoio.participacao for apoio in apoios),
         mensagens=sum(bool(apoio.mensagem) for apoio in apoios),
+        relatos_aprovados=sum(apoio.relato_aprovado for apoio in apoios),
     )
 
     return ApoioAdminList(stats=stats, apoios=apoios)
+
+
+def update_relato_approval(apoio_id: str, relato_aprovado: bool) -> ApoioAdminRecord | None:
+    with get_connection() as connection:
+        row = connection.execute(
+            """
+            UPDATE apoios
+            SET relato_aprovado = %s
+            WHERE id = %s AND mensagem IS NOT NULL AND btrim(mensagem) <> ''
+            RETURNING
+                id,
+                nome,
+                instituicao,
+                bairro,
+                turno,
+                faixa_etaria,
+                participacao,
+                contato_apoio,
+                contato_piloto,
+                contato_embaixador,
+                mensagem,
+                relato_aprovado,
+                confirmou_piloto,
+                confirmou_independencia,
+                created_at
+            """,
+            (relato_aprovado, apoio_id),
+        ).fetchone()
+
+    if row is None:
+        return None
+
+    return ApoioAdminRecord(
+        id=row[0],
+        nome=row[1],
+        instituicao=row[2],
+        bairro=row[3],
+        turno=row[4],
+        faixa_etaria=row[5],
+        participacao=json.loads(row[6]) if isinstance(row[6], str) else row[6],
+        contato_apoio=row[7],
+        contato_piloto=row[8],
+        contato_embaixador=row[9],
+        mensagem=row[10],
+        relato_aprovado=row[11],
+        confirmou_piloto=row[12],
+        confirmou_independencia=row[13],
+        created_at=row[14],
+    )
+
+
+def list_approved_relatos(limit: int = 8) -> list[PublicRelato]:
+    safe_limit = min(max(limit, 1), 20)
+
+    with get_connection() as connection:
+        rows = connection.execute(
+            """
+            SELECT id, mensagem, bairro, faixa_etaria, created_at
+            FROM apoios
+            WHERE relato_aprovado = TRUE
+              AND mensagem IS NOT NULL
+              AND btrim(mensagem) <> ''
+            ORDER BY created_at DESC
+            LIMIT %s
+            """,
+            (safe_limit,),
+        ).fetchall()
+
+    return [
+        PublicRelato(
+            id=row[0],
+            mensagem=row[1],
+            bairro=row[2],
+            faixa_etaria=row[3],
+            created_at=row[4],
+        )
+        for row in rows
+    ]

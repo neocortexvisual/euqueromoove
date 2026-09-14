@@ -85,6 +85,7 @@ class ApoioAdminRecord(BaseModel):
     contato_piloto: str | None = None
     contato_embaixador: str | None = None
     mensagem: str | None = None
+    relato_aprovado: bool = False
     confirmou_piloto: bool
     confirmou_independencia: bool
     created_at: datetime
@@ -96,8 +97,21 @@ class ApoioAdminStats(BaseModel):
     piloto: int
     embaixador: int
     mensagens: int
+    relatos_aprovados: int
 
 
 class ApoioAdminList(BaseModel):
     stats: ApoioAdminStats
     apoios: list[ApoioAdminRecord]
+
+
+class RelatoModeration(BaseModel):
+    relato_aprovado: bool
+
+
+class PublicRelato(BaseModel):
+    id: UUID
+    mensagem: str
+    bairro: str
+    faixa_etaria: str
+    created_at: datetime

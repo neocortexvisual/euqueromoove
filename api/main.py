@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 
 from api.routes.admin import router as admin_router
 from api.routes.apoios import router as apoios_router
+from api.routes.relatos import router as relatos_router
 from database.connection import init_database
 
 
@@ -28,6 +29,7 @@ app.add_middleware(
 
 app.include_router(apoios_router, prefix="/api")
 app.include_router(admin_router, prefix="/api")
+app.include_router(relatos_router, prefix="/api")
 
 
 @app.on_event("startup")

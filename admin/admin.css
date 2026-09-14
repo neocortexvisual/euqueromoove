@@ -134,7 +134,7 @@ input {
 
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 14px;
   margin: 18px 0;
 }
@@ -290,7 +290,11 @@ input {
 }
 
 .message-card {
+  display: flex;
+  min-width: 0;
   min-height: 100%;
+  flex-direction: column;
+  gap: 10px;
   padding: 14px;
   border-radius: 14px;
   background: linear-gradient(135deg, #f3fff8, #f9fbfb);
@@ -301,6 +305,38 @@ input {
   display: block;
   margin-bottom: 6px;
   color: var(--deep);
+}
+
+.message-card p {
+  overflow-wrap: anywhere;
+}
+
+.message-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.moderation-button {
+  border: 0;
+  border-radius: 999px;
+  padding: 9px 12px;
+  background: var(--deep);
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.moderation-button.secondary {
+  background: #e9f2ef;
+  color: var(--deep);
+}
+
+.moderation-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .empty-state {

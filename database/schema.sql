@@ -10,7 +10,11 @@ CREATE TABLE IF NOT EXISTS apoios (
   contato_piloto TEXT,
   contato_embaixador TEXT,
   mensagem TEXT,
+  relato_aprovado BOOLEAN NOT NULL DEFAULT FALSE,
   confirmou_piloto BOOLEAN NOT NULL,
   confirmou_independencia BOOLEAN NOT NULL,
   created_at TIMESTAMPTZ NOT NULL
 );
+
+ALTER TABLE apoios
+ADD COLUMN IF NOT EXISTS relato_aprovado BOOLEAN NOT NULL DEFAULT FALSE;

@@ -3,6 +3,8 @@ const nav = document.querySelector(".main-nav");
 const heroBg = document.querySelector(".hero-bg");
 const API_BASE_URL =
   window.MOOVE_API_BASE_URL || (window.location.protocol === "file:" ? "http://127.0.0.1:8002/api" : "/api");
+const publicRelatoText = document.querySelector("[data-public-relato-text]");
+const publicRelatoAuthor = document.querySelector("[data-public-relato-author]");
 const supportForm = document.querySelector(".support-form");
 const messageField = document.querySelector(".message-field textarea");
 const charCount = document.querySelector(".char-count");
@@ -22,6 +24,7 @@ const revealGroups = [
   [document.querySelector(".support-form")],
 ];
 const animatedCards = revealGroups.flat().filter(Boolean);
+let publicRelatoIndex = 0;
 
 toggle?.addEventListener("click", () => {
   const isOpen = nav.classList.toggle("open");
@@ -75,6 +78,36 @@ const setFormStatus = (message, type = "neutral") => {
   formStatus.dataset.type = type;
 };
 
+const setPublicRelato = (relato) => {
+  if (!publicRelatoText || !publicRelatoAuthor) return;
+
+  publicRelatoText.textContent = `“${relato.mensagem}”`;
+  publicRelatoAuthor.textContent = `— Estudante, ${relato.bairro}`;
+};
+
+const loadPublicRelatos = async () => {
+  if (!publicRelatoText || !publicRelatoAuthor) return;
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/relatos?limit=8`);
+    if (!response.ok) return;
+
+    const relatos = await response.json();
+    if (!Array.isArray(relatos) || relatos.length === 0) return;
+
+    setPublicRelato(relatos[0]);
+
+    if (relatos.length > 1) {
+      window.setInterval(() => {
+        publicRelatoIndex = (publicRelatoIndex + 1) % relatos.length;
+        setPublicRelato(relatos[publicRelatoIndex]);
+      }, 7000);
+    }
+  } catch (error) {
+    console.warn("Nao foi possivel carregar relatos publicos.", error);
+  }
+};
+
 const buildSupportPayload = () => {
   const formData = new FormData(supportForm);
 
@@ -121,6 +154,7 @@ participationInputs.forEach((input) => {
 });
 
 syncConditionalFields();
+loadPublicRelatos();
 
 supportForm?.addEventListener("submit", async (event) => {
   event.preventDefault();

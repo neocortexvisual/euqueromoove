@@ -51,6 +51,7 @@ const updateStats = (stats) => {
 const filterRecords = () => {
   if (activeFilter === "todos") return records;
   if (activeFilter === "mensagens") return records.filter((record) => record.mensagem);
+  if (activeFilter === "aprovados") return records.filter((record) => record.relato_aprovado);
   return records.filter((record) => record.participacao.includes(activeFilter));
 };
 
@@ -80,13 +81,36 @@ const renderRecords = () => {
       const message = record.mensagem
         ? escapeHtml(record.mensagem)
         : "Sem relato enviado neste registro.";
+      const moderationLabel = record.relato_aprovado ? "Ocultar relato" : "Aprovar relato";
+      const moderationValue = record.relato_aprovado ? "false" : "true";
+      const approvalChip = record.relato_aprovado
+        ? '<span class="chip is-hot">Relato aprovado</span>'
+        : "";
+      const moderationActions = record.mensagem
+        ? `
+            <div class="message-actions">
+              <button
+                class="moderation-button"
+                type="button"
+                data-relato-id="${record.id}"
+                data-approve="${moderationValue}"
+              >
+                ${moderationLabel}
+              </button>
+            </div>
+          `
+        : `
+            <div class="message-actions">
+              <button class="moderation-button secondary" type="button" disabled>Sem relato</button>
+            </div>
+          `;
 
       return `
         <article class="record-card">
           <div>
             <h3>${escapeHtml(record.nome)}</h3>
             <p>${escapeHtml(record.instituicao)} · ${escapeHtml(record.bairro)}</p>
-            <div class="chips">${chips}</div>
+            <div class="chips">${chips}${approvalChip}</div>
           </div>
 
           <dl class="meta-list">
@@ -111,6 +135,7 @@ const renderRecords = () => {
           <div class="message-card">
             <strong>Relato</strong>
             <p>${message}</p>
+            ${moderationActions}
           </div>
         </article>
       `;
@@ -118,6 +143,34 @@ const renderRecords = () => {
     .join("");
 
   setStatus(`${filtered.length} de ${records.length} registro(s) exibido(s).`);
+};
+
+const moderateRelato = async (apoioId, relatoAprovado) => {
+  setStatus("Atualizando aprovação do relato...");
+
+  const response = await fetch(`${API_BASE_URL}/admin/apoios/${apoioId}/relato`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ relato_aprovado: relatoAprovado }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Nao foi possivel atualizar esse relato.");
+  }
+
+  const updated = await response.json();
+  records = records.map((record) => (record.id === updated.id ? updated : record));
+  updateStats({
+    total: records.length,
+    apoiar: records.filter((record) => record.participacao.includes("apoiar")).length,
+    piloto: records.filter((record) => record.participacao.includes("piloto")).length,
+    embaixador: records.filter((record) => record.participacao.includes("embaixador")).length,
+    mensagens: records.filter((record) => record.mensagem).length,
+    relatos_aprovados: records.filter((record) => record.relato_aprovado).length,
+  });
+  renderRecords();
 };
 
 const loadRecords = async () => {
@@ -152,6 +205,20 @@ filterButtons.forEach((button) => {
     filterButtons.forEach((item) => item.classList.toggle("is-active", item === button));
     renderRecords();
   });
+});
+
+recordsList?.addEventListener("click", async (event) => {
+  const button = event.target.closest("[data-relato-id]");
+  if (!button) return;
+
+  button.disabled = true;
+
+  try {
+    await moderateRelato(button.dataset.relatoId, button.dataset.approve === "true");
+  } catch (error) {
+    setStatus(error.message || "Erro ao atualizar relato.");
+    button.disabled = false;
+  }
 });
 
 refreshButton?.addEventListener("click", loadRecords);
