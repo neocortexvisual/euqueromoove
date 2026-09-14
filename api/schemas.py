@@ -71,3 +71,33 @@ class ApoioResponse(BaseModel):
 
 class ApoioRecord(ApoioResponse):
     created_at: datetime
+
+
+class ApoioAdminRecord(BaseModel):
+    id: UUID
+    nome: str
+    instituicao: str
+    bairro: str
+    turno: str
+    faixa_etaria: str
+    participacao: list[Participation]
+    contato_apoio: str | None = None
+    contato_piloto: str | None = None
+    contato_embaixador: str | None = None
+    mensagem: str | None = None
+    confirmou_piloto: bool
+    confirmou_independencia: bool
+    created_at: datetime
+
+
+class ApoioAdminStats(BaseModel):
+    total: int
+    apoiar: int
+    piloto: int
+    embaixador: int
+    mensagens: int
+
+
+class ApoioAdminList(BaseModel):
+    stats: ApoioAdminStats
+    apoios: list[ApoioAdminRecord]

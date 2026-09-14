@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from api.routes.admin import router as admin_router
 from api.routes.apoios import router as apoios_router
 from database.connection import init_database
 
@@ -26,6 +27,7 @@ app.add_middleware(
 )
 
 app.include_router(apoios_router, prefix="/api")
+app.include_router(admin_router, prefix="/api")
 
 
 @app.on_event("startup")

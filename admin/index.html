@@ -8,10 +8,59 @@
   </head>
   <body>
     <main class="admin-shell">
-      <section class="admin-hero">
-        <span>Moove Admin</span>
-        <h1>Painel de participações</h1>
-        <p>Área reservada para acompanhar os registros do formulário.</p>
+      <header class="admin-topbar">
+        <a class="brand" href="/">
+          <span class="brand-mark">M</span>
+          <span>
+            <strong>Moove Admin</strong>
+            <small>Painel de participações</small>
+          </span>
+        </a>
+        <button class="refresh-button" type="button">Atualizar</button>
+      </header>
+
+      <section class="admin-hero" aria-labelledby="admin-title">
+        <span>Manifesto digital</span>
+        <h1 id="admin-title">Acompanhe quem quer o Moove em movimento.</h1>
+        <p>Veja apoios, interessados no piloto, embaixadores e relatos enviados pelo formulário.</p>
+      </section>
+
+      <section class="stats-grid" aria-label="Resumo dos registros">
+        <article>
+          <span>Total</span>
+          <strong data-stat="total">0</strong>
+        </article>
+        <article>
+          <span>Apoios</span>
+          <strong data-stat="apoiar">0</strong>
+        </article>
+        <article>
+          <span>Piloto</span>
+          <strong data-stat="piloto">0</strong>
+        </article>
+        <article>
+          <span>Embaixadores</span>
+          <strong data-stat="embaixador">0</strong>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <span>Registros</span>
+            <h2>Participantes recentes</h2>
+          </div>
+          <div class="filters" aria-label="Filtros">
+            <button class="filter-button is-active" type="button" data-filter="todos">Todos</button>
+            <button class="filter-button" type="button" data-filter="apoiar">Apoio</button>
+            <button class="filter-button" type="button" data-filter="piloto">Piloto</button>
+            <button class="filter-button" type="button" data-filter="embaixador">Embaixador</button>
+            <button class="filter-button" type="button" data-filter="mensagens">Com relato</button>
+          </div>
+        </div>
+
+        <div class="status-line" role="status">Carregando registros...</div>
+        <div class="records-list" aria-live="polite"></div>
       </section>
     </main>
 

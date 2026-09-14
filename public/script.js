@@ -1,6 +1,8 @@
 const toggle = document.querySelector(".menu-toggle");
 const nav = document.querySelector(".main-nav");
 const heroBg = document.querySelector(".hero-bg");
+const API_BASE_URL =
+  window.MOOVE_API_BASE_URL || (window.location.protocol === "file:" ? "http://127.0.0.1:8002/api" : "/api");
 const supportForm = document.querySelector(".support-form");
 const messageField = document.querySelector(".message-field textarea");
 const charCount = document.querySelector(".char-count");
@@ -92,6 +94,24 @@ const buildSupportPayload = () => {
   };
 };
 
+const getApiErrorMessage = async (response) => {
+  try {
+    const data = await response.json();
+    if (Array.isArray(data.detail)) {
+      return data.detail
+        .map((item) => item.msg || item.message)
+        .filter(Boolean)
+        .join(" ");
+    }
+    if (typeof data.detail === "string") return data.detail;
+    if (typeof data.message === "string") return data.message;
+  } catch (error) {
+    return null;
+  }
+
+  return null;
+};
+
 participationInputs.forEach((input) => {
   input.addEventListener("change", () => {
     participationInputs.forEach((item) => item.setCustomValidity(""));
@@ -127,7 +147,7 @@ supportForm?.addEventListener("submit", async (event) => {
   setFormStatus("Enviando seu apoio...", "neutral");
 
   try {
-    const response = await fetch("/api/apoios", {
+    const response = await fetch(`${API_BASE_URL}/apoios`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -136,13 +156,18 @@ supportForm?.addEventListener("submit", async (event) => {
     });
 
     if (!response.ok) {
-      throw new Error("Não foi possível registrar seu apoio.");
+      const apiMessage = await getApiErrorMessage(response);
+      throw new Error(apiMessage || "Não foi possível registrar seu apoio.");
     }
 
     button.textContent = "Apoio registrado";
     setFormStatus("Apoio registrado com sucesso.", "success");
     supportForm.reset();
     syncConditionalFields();
+    window.setTimeout(() => {
+      button.innerHTML = originalContent;
+      button.disabled = false;
+    }, 1800);
     if (charCount && messageField) {
       charCount.textContent = `0 / ${messageField.maxLength}`;
     }
