@@ -123,8 +123,8 @@ const renderRecords = () => {
               <dd>${escapeHtml(record.turno)}</dd>
             </div>
             <div>
-              <dt>Faixa etaria</dt>
-              <dd>${escapeHtml(record.faixa_etaria)}</dd>
+              <dt>Curso</dt>
+              <dd>${escapeHtml(record.curso || record.faixa_etaria || "Nao informado")}</dd>
             </div>
             <div>
               <dt>Enviado em</dt>

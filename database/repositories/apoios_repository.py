@@ -26,7 +26,7 @@ def create_apoio(payload: ApoioCreate) -> ApoioRecord:
                 instituicao,
                 bairro,
                 turno,
-                faixa_etaria,
+                curso,
                 participacao,
                 contato_apoio,
                 contato_piloto,
@@ -44,7 +44,7 @@ def create_apoio(payload: ApoioCreate) -> ApoioRecord:
                 payload.instituicao,
                 payload.bairro,
                 payload.turno,
-                payload.faixa_etaria,
+                payload.curso,
                 json.dumps(payload.participacao, ensure_ascii=False),
                 payload.contato_apoio,
                 payload.contato_piloto,
@@ -71,6 +71,7 @@ def list_apoios(limit: int = 200) -> ApoioAdminList:
                 instituicao,
                 bairro,
                 turno,
+                curso,
                 faixa_etaria,
                 participacao,
                 contato_apoio,
@@ -95,16 +96,17 @@ def list_apoios(limit: int = 200) -> ApoioAdminList:
             instituicao=row[2],
             bairro=row[3],
             turno=row[4],
-            faixa_etaria=row[5],
-            participacao=json.loads(row[6]) if isinstance(row[6], str) else row[6],
-            contato_apoio=row[7],
-            contato_piloto=row[8],
-            contato_embaixador=row[9],
-            mensagem=row[10],
-            relato_aprovado=row[11],
-            confirmou_piloto=row[12],
-            confirmou_independencia=row[13],
-            created_at=row[14],
+            curso=row[5],
+            faixa_etaria=row[6],
+            participacao=json.loads(row[7]) if isinstance(row[7], str) else row[7],
+            contato_apoio=row[8],
+            contato_piloto=row[9],
+            contato_embaixador=row[10],
+            mensagem=row[11],
+            relato_aprovado=row[12],
+            confirmou_piloto=row[13],
+            confirmou_independencia=row[14],
+            created_at=row[15],
         )
         for row in rows
     ]
@@ -134,6 +136,7 @@ def update_relato_approval(apoio_id: str, relato_aprovado: bool) -> ApoioAdminRe
                 instituicao,
                 bairro,
                 turno,
+                curso,
                 faixa_etaria,
                 participacao,
                 contato_apoio,
@@ -157,16 +160,17 @@ def update_relato_approval(apoio_id: str, relato_aprovado: bool) -> ApoioAdminRe
         instituicao=row[2],
         bairro=row[3],
         turno=row[4],
-        faixa_etaria=row[5],
-        participacao=json.loads(row[6]) if isinstance(row[6], str) else row[6],
-        contato_apoio=row[7],
-        contato_piloto=row[8],
-        contato_embaixador=row[9],
-        mensagem=row[10],
-        relato_aprovado=row[11],
-        confirmou_piloto=row[12],
-        confirmou_independencia=row[13],
-        created_at=row[14],
+        curso=row[5],
+        faixa_etaria=row[6],
+        participacao=json.loads(row[7]) if isinstance(row[7], str) else row[7],
+        contato_apoio=row[8],
+        contato_piloto=row[9],
+        contato_embaixador=row[10],
+        mensagem=row[11],
+        relato_aprovado=row[12],
+        confirmou_piloto=row[13],
+        confirmou_independencia=row[14],
+        created_at=row[15],
     )
 
 
@@ -176,7 +180,7 @@ def list_approved_relatos(limit: int = 8) -> list[PublicRelato]:
     with get_connection() as connection:
         rows = connection.execute(
             """
-            SELECT id, mensagem, bairro, faixa_etaria, created_at
+            SELECT id, mensagem, bairro, curso, created_at
             FROM apoios
             WHERE relato_aprovado = TRUE
               AND mensagem IS NOT NULL
@@ -192,7 +196,7 @@ def list_approved_relatos(limit: int = 8) -> list[PublicRelato]:
             id=row[0],
             mensagem=row[1],
             bairro=row[2],
-            faixa_etaria=row[3],
+            curso=row[3],
             created_at=row[4],
         )
         for row in rows

@@ -122,7 +122,7 @@ const buildSupportPayload = () => {
     instituicao: formData.get("instituicao"),
     bairro: formData.get("bairro"),
     turno: formData.get("turno"),
-    faixa_etaria: formData.get("faixa_etaria"),
+    curso: formData.get("curso"),
     participacao: selected,
     contato_apoio: selected.includes("apoiar") ? contact : null,
     contato_piloto: selected.includes("piloto") ? contact : null,

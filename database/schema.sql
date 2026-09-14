@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS apoios (
   instituicao TEXT NOT NULL,
   bairro TEXT NOT NULL,
   turno TEXT NOT NULL,
-  faixa_etaria TEXT NOT NULL,
+  faixa_etaria TEXT,
+  curso TEXT,
   participacao JSONB NOT NULL,
   contato_apoio TEXT,
   contato_piloto TEXT,
@@ -18,3 +19,9 @@ CREATE TABLE IF NOT EXISTS apoios (
 
 ALTER TABLE apoios
 ADD COLUMN IF NOT EXISTS relato_aprovado BOOLEAN NOT NULL DEFAULT FALSE;
+
+ALTER TABLE apoios
+ADD COLUMN IF NOT EXISTS curso TEXT;
+
+ALTER TABLE apoios
+ALTER COLUMN faixa_etaria DROP NOT NULL;

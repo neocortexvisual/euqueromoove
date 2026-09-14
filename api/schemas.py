@@ -13,7 +13,7 @@ class ApoioCreate(BaseModel):
     instituicao: str = Field(min_length=2, max_length=140)
     bairro: str = Field(min_length=2, max_length=100)
     turno: str = Field(min_length=1, max_length=40)
-    faixa_etaria: str = Field(min_length=1, max_length=40)
+    curso: str = Field(min_length=2, max_length=120)
     participacao: list[Participation] = Field(min_length=1)
     contato_apoio: str | None = Field(default=None, max_length=40)
     contato_piloto: str | None = Field(default=None, max_length=40)
@@ -27,7 +27,7 @@ class ApoioCreate(BaseModel):
         "instituicao",
         "bairro",
         "turno",
-        "faixa_etaria",
+        "curso",
         "contato_apoio",
         "contato_piloto",
         "contato_embaixador",
@@ -79,7 +79,8 @@ class ApoioAdminRecord(BaseModel):
     instituicao: str
     bairro: str
     turno: str
-    faixa_etaria: str
+    curso: str | None = None
+    faixa_etaria: str | None = None
     participacao: list[Participation]
     contato_apoio: str | None = None
     contato_piloto: str | None = None
@@ -113,5 +114,5 @@ class PublicRelato(BaseModel):
     id: UUID
     mensagem: str
     bairro: str
-    faixa_etaria: str
+    curso: str | None = None
     created_at: datetime
