@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS apoios (
   turno TEXT NOT NULL,
   faixa_etaria TEXT NOT NULL,
   participacao JSONB NOT NULL,
+  contato_apoio TEXT,
   contato_piloto TEXT,
   contato_embaixador TEXT,
   mensagem TEXT,

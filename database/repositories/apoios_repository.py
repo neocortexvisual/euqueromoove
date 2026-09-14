@@ -21,13 +21,14 @@ def create_apoio(payload: ApoioCreate) -> ApoioRecord:
                 turno,
                 faixa_etaria,
                 participacao,
+                contato_apoio,
                 contato_piloto,
                 contato_embaixador,
                 mensagem,
                 confirmou_piloto,
                 confirmou_independencia,
                 created_at
-            ) VALUES (%s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s, %s, %s, %s, %s)
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s::jsonb, %s, %s, %s, %s, %s, %s, %s)
             """,
             (
                 apoio_id,
@@ -37,6 +38,7 @@ def create_apoio(payload: ApoioCreate) -> ApoioRecord:
                 payload.turno,
                 payload.faixa_etaria,
                 json.dumps(payload.participacao, ensure_ascii=False),
+                payload.contato_apoio,
                 payload.contato_piloto,
                 payload.contato_embaixador,
                 payload.mensagem,

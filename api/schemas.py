@@ -15,6 +15,7 @@ class ApoioCreate(BaseModel):
     turno: str = Field(min_length=1, max_length=40)
     faixa_etaria: str = Field(min_length=1, max_length=40)
     participacao: list[Participation] = Field(min_length=1)
+    contato_apoio: str | None = Field(default=None, max_length=40)
     contato_piloto: str | None = Field(default=None, max_length=40)
     contato_embaixador: str | None = Field(default=None, max_length=40)
     mensagem: str | None = Field(default=None, max_length=500)
@@ -27,6 +28,7 @@ class ApoioCreate(BaseModel):
         "bairro",
         "turno",
         "faixa_etaria",
+        "contato_apoio",
         "contato_piloto",
         "contato_embaixador",
         "mensagem",
@@ -42,6 +44,9 @@ class ApoioCreate(BaseModel):
 
     @model_validator(mode="after")
     def validate_conditional_fields(self) -> "ApoioCreate":
+        if "apoiar" in self.participacao and not self.contato_apoio:
+            raise ValueError("contato_apoio é obrigatório para quem só quer apoiar.")
+
         if "piloto" in self.participacao and not self.contato_piloto:
             raise ValueError("contato_piloto é obrigatório para quem quer testar o piloto.")
 

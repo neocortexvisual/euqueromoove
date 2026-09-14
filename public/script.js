@@ -5,8 +5,10 @@ const supportForm = document.querySelector(".support-form");
 const messageField = document.querySelector(".message-field textarea");
 const charCount = document.querySelector(".char-count");
 const participationInputs = [...document.querySelectorAll('input[name="participacao"]')];
+const supportContactField = document.querySelector(".support-contact-field");
 const pilotContactField = document.querySelector(".pilot-contact-field");
 const ambassadorContactField = document.querySelector(".ambassador-contact-field");
+const supportContactInput = document.querySelector('input[name="contato_apoio"]');
 const pilotContactInput = document.querySelector('input[name="contato_piloto"]');
 const ambassadorContactInput = document.querySelector('input[name="contato_embaixador"]');
 const formStatus = document.querySelector(".form-status");
@@ -56,6 +58,7 @@ const setFieldVisibility = (field, input, isVisible) => {
 
 const syncConditionalFields = () => {
   const selected = getSelectedParticipation();
+  setFieldVisibility(supportContactField, supportContactInput, selected.includes("apoiar"));
   setFieldVisibility(pilotContactField, pilotContactInput, selected.includes("piloto"));
   setFieldVisibility(
     ambassadorContactField,
@@ -80,6 +83,7 @@ const buildSupportPayload = () => {
     turno: formData.get("turno"),
     faixa_etaria: formData.get("faixa_etaria"),
     participacao: getSelectedParticipation(),
+    contato_apoio: formData.get("contato_apoio") || null,
     contato_piloto: formData.get("contato_piloto") || null,
     contato_embaixador: formData.get("contato_embaixador") || null,
     mensagem: formData.get("mensagem") || null,
